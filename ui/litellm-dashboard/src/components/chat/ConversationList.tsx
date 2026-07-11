@@ -114,9 +114,28 @@ const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSel
   return (
     <div
       onClick={() => !editing && onSelect(conv.id)}
-      className={`group flex items-center px-2 py-1.5 rounded-md cursor-pointer transition-colors min-h-[34px] relative ${
-        isActive ? "bg-accent text-accent-foreground" : "hover:bg-accent/50"
-      }`}
+      className="conversation-row group"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        padding: "6px 8px",
+        borderRadius: 6,
+        cursor: editing ? "default" : "pointer",
+        backgroundColor: isActive ? "rgba(61,220,151,0.12)" : "transparent",
+        transition: "background-color 0.15s",
+        minHeight: 34,
+        position: "relative",
+      }}
+      onMouseEnter={(e) => {
+        if (!isActive) {
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = "#171c23";
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isActive) {
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = "transparent";
+        }
+      }}
     >
       {editing ? (
         <Input
@@ -130,14 +149,20 @@ const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSel
         />
       ) : (
         <>
-          <span
-            className={`flex-1 text-[13px] overflow-hidden whitespace-nowrap text-ellipsis ${
-              isActive ? "font-medium" : ""
-            }`}
+          <Text
+            style={{
+              flex: 1,
+              fontSize: 13,
+              color: isActive ? "#3ddc97" : "#e6edf3",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
+              fontWeight: isActive ? 500 : 400,
+            }}
             title={conv.title}
           >
             {truncatedTitle}
-          </span>
+          </Text>
 
           <div
             className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
@@ -220,43 +245,68 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, conversations, onSelect
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-[480px] p-4 gap-0">
-        <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            autoFocus
-            placeholder="Search conversations\u2026"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="pl-9"
-          />
-        </div>
+  return (
+    <Modal
+      open={open}
+      onCancel={onClose}
+      footer={null}
+      title={null}
+      width={480}
+      styles={{ body: { padding: "16px 16px 8px" } }}
+    >
+      <Input
+        autoFocus
+        prefix={<SearchOutlined style={{ color: "#5b6670" }} />}
+        placeholder="Search conversations…"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        style={{ marginBottom: 12 }}
+        allowClear
+      />
 
-        <ScrollArea className="max-h-[320px]">
-          {filtered.length === 0 ? (
-            <div className="text-center py-6 text-muted-foreground text-sm">No conversations found</div>
-          ) : (
-            filtered.map((conv) => {
-              const truncated = conv.title.length > 55 ? conv.title.slice(0, 55) + "\u2026" : conv.title;
-              return (
-                <div
-                  key={conv.id}
-                  onClick={() => handleSelect(conv.id)}
-                  className="flex items-center gap-2 px-2.5 py-2 rounded-md cursor-pointer transition-colors hover:bg-accent/50"
+      <div style={{ maxHeight: 320, overflowY: "auto" }}>
+        {filtered.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "24px 0", color: "#5b6670" }}>
+            No conversations found
+          </div>
+        ) : (
+          filtered.map((conv) => {
+            const truncated =
+              conv.title.length > 55 ? conv.title.slice(0, 55) + "…" : conv.title;
+            return (
+              <div
+                key={conv.id}
+                onClick={() => handleSelect(conv.id)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "8px 10px",
+                  borderRadius: 6,
+                  cursor: "pointer",
+                  transition: "background-color 0.1s",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.backgroundColor = "#171c23";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.backgroundColor = "transparent";
+                }}
+              >
+                <MessageOutlined style={{ color: "#5b6670", flexShrink: 0 }} />
+                <Text style={{ fontSize: 13 }}>{truncated}</Text>
+                <Text
+                  type="secondary"
+                  style={{ fontSize: 11, marginLeft: "auto", flexShrink: 0 }}
                 >
-                  <MessageSquare className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span className="text-[13px] flex-1 truncate">{truncated}</span>
-                  <span className="text-[11px] text-muted-foreground shrink-0 ml-auto">
-                    {dayjs(conv.updatedAt).format("MMM D")}
-                  </span>
-                </div>
-              );
-            })
-          )}
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+                  {dayjs(conv.updatedAt).format("MMM D")}
+                </Text>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </Modal>
   );
 };
 
@@ -282,15 +332,32 @@ const ConversationList: React.FC<Props> = ({ conversations, activeConversationId
       <div className="flex flex-col h-full w-full overflow-hidden">
         <ScrollArea className="flex-1 h-0 px-1.5 pt-2">
           {grouped.length === 0 ? (
-            <div className="text-center text-muted-foreground/60 text-xs mt-8 px-3">
-              No conversations yet
+            <div
+              style={{
+                textAlign: "center",
+                color: "#5b6670",
+                fontSize: 12,
+                marginTop: 32,
+                padding: "0 12px",
+              }}
+            >
+              No conversations yet.
               <br />
               Start a new chat above
             </div>
           ) : (
             grouped.map(({ group, items }) => (
-              <div key={group} className="mb-2">
-                <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-2 pt-2 pb-1">
+              <div key={group} style={{ marginBottom: 8 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: "#5b6670",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                    padding: "8px 8px 4px",
+                  }}
+                >
                   {group}
                 </div>
                 {items.map((conv) => (
@@ -306,7 +373,35 @@ const ConversationList: React.FC<Props> = ({ conversations, activeConversationId
               </div>
             ))
           )}
-        </ScrollArea>
+        </div>
+
+        {/* Bottom: user avatar placeholder */}
+        <div
+          style={{
+            padding: "10px 12px",
+            borderTop: "1px solid #232a32",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <Avatar
+            size={28}
+            icon={<UserOutlined />}
+            style={{ backgroundColor: "rgba(61,220,151,0.12)", color: "#3ddc97", flexShrink: 0 }}
+          />
+          <Text
+            style={{
+              fontSize: 13,
+              color: "#8b98a5",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
+            }}
+          >
+            My Account
+          </Text>
+        </div>
       </div>
 
       <SearchModal

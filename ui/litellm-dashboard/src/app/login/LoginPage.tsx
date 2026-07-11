@@ -7,11 +7,34 @@ import { exchangeLoginCode, getProxyBaseUrl, switchToWorkerUrl } from "@/compone
 import { clearTokenCookies, getCookieFromDocument } from "@/utils/cookieUtils";
 import { isJwtExpired } from "@/utils/jwtUtils";
 import { consumeReturnUrl, getReturnUrl, isValidReturnUrl } from "@/utils/returnUrlUtils";
-import { InfoCircleOutlined, CloudServerOutlined } from "@ant-design/icons";
-import { Alert, Button, Card, Form, Input, Popover, Select, Space, Typography } from "antd";
+import { CloudServerOutlined } from "@ant-design/icons";
+import { Alert, Button, Form, Input, Popover, Select, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useWorker } from "@/hooks/useWorker";
+
+// NeoX design tokens
+const N = {
+  canvas: "#0a0c0f",
+  panel: "#12161b",
+  panelHi: "#171c23",
+  hairline: "#232a32",
+  ink: "#e6edf3",
+  muted: "#8b98a5",
+  faint: "#5b6670",
+  accent: "#3ddc97",
+  accentDim: "#1f6f52",
+};
+
+function NeoXLogo({ size = 40 }: { size?: number }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width={size} height={size}>
+      <rect width="32" height="32" rx="7" fill={N.canvas} />
+      <rect x="1" y="1" width="30" height="30" rx="6" fill="none" stroke={N.accent} strokeOpacity="0.3" />
+      <path d="M9.5 23V9h2.7l8.1 10.2V9H23v14h-2.7L12.2 12.8V23z" fill={N.accent} />
+    </svg>
+  );
+}
 
 function LoginPageContent() {
   const [username, setUsername] = useState("");
@@ -137,93 +160,193 @@ function LoginPageContent() {
   const error = loginMutation.error instanceof Error ? loginMutation.error.message : null;
   const isLoginLoading = loginMutation.isPending;
 
-  const { Title, Text, Paragraph } = Typography;
-
   if (isConfigLoading || isLoading) {
     return <LoadingScreen />;
   }
 
-  // Show disabled message if admin UI is disabled
+  const gridBg = {
+    backgroundImage: `
+      linear-gradient(to right, rgba(255,255,255,0.018) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.018) 1px, transparent 1px)
+    `,
+    backgroundSize: "40px 40px",
+  };
+
+  const inputStyle: React.CSSProperties = {
+    background: N.panelHi,
+    border: `1px solid ${N.hairline}`,
+    color: N.ink,
+    borderRadius: 6,
+  };
+
+  const labelStyle: React.CSSProperties = {
+    color: N.muted,
+    fontSize: 12,
+    fontWeight: 500,
+    letterSpacing: "0.06em",
+    textTransform: "uppercase",
+  };
+
   if (uiConfig && uiConfig.admin_ui_disabled) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Card className="w-full max-w-lg shadow-md">
-          <Space direction="vertical" size="middle" className="w-full">
-            <div className="text-center">
-              <Title level={2}>🚅 LiteLLM</Title>
-            </div>
-
-            <Alert
-              message="Admin UI Disabled"
-              description={
-                <>
-                  <Paragraph className="text-sm">
-                    The Admin UI has been disabled by the administrator. To re-enable it, please update the following
-                    environment variable:
-                  </Paragraph>
-                  <Paragraph className="text-sm">
-                    <code className="bg-gray-100 px-1 py-0.5 rounded-sm text-xs">DISABLE_ADMIN_UI=False</code>
-                  </Paragraph>
-                </>
-              }
-              type="warning"
-              showIcon
-            />
-          </Space>
-        </Card>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: N.canvas, ...gridBg }}>
+        <div style={{ background: N.panel, border: `1px solid ${N.hairline}`, borderRadius: 12, padding: "40px 44px", width: "100%", maxWidth: 440 }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, marginBottom: 28 }}>
+            <NeoXLogo size={44} />
+            <span style={{ color: N.muted, fontSize: 13 }}>NeoX LLM Gateway</span>
+          </div>
+          <Alert
+            message="Admin UI Disabled"
+            description={
+              <span style={{ fontSize: 13, color: N.muted }}>
+                Set <code style={{ background: N.panelHi, padding: "1px 5px", borderRadius: 4 }}>DISABLE_ADMIN_UI=False</code> to re-enable.
+              </span>
+            }
+            type="warning"
+            showIcon
+          />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-lg shadow-md">
-        <Space direction="vertical" size="middle" className="w-full">
-          <div className="text-center">
-            <Title level={2}>🚅 LiteLLM</Title>
+    <>
+      <style>{`
+        .neox-login .ant-input,
+        .neox-login .ant-input-password,
+        .neox-login .ant-input-affix-wrapper {
+          background: ${N.panelHi} !important;
+          border-color: ${N.hairline} !important;
+          color: ${N.ink} !important;
+          border-radius: 6px !important;
+        }
+        .neox-login .ant-input-affix-wrapper:hover,
+        .neox-login .ant-input-affix-wrapper:focus,
+        .neox-login .ant-input-affix-wrapper-focused {
+          border-color: ${N.accent} !important;
+          box-shadow: 0 0 0 2px ${N.accentDim}55 !important;
+        }
+        .neox-login .ant-input:focus,
+        .neox-login .ant-input:hover {
+          border-color: ${N.accent} !important;
+          box-shadow: 0 0 0 2px ${N.accentDim}55 !important;
+        }
+        .neox-login .ant-input::placeholder,
+        .neox-login .ant-input-affix-wrapper input::placeholder {
+          color: ${N.faint} !important;
+        }
+        .neox-login .ant-input-password-icon,
+        .neox-login .anticon-eye,
+        .neox-login .anticon-eye-invisible {
+          color: ${N.faint} !important;
+        }
+        .neox-login .ant-input-password-icon:hover,
+        .neox-login .anticon-eye:hover {
+          color: ${N.muted} !important;
+        }
+        .neox-login .ant-form-item-label > label {
+          color: ${N.muted} !important;
+          font-size: 12px !important;
+          font-weight: 500 !important;
+          letter-spacing: 0.06em !important;
+          text-transform: uppercase !important;
+        }
+        .neox-login .ant-form-item-explain-error {
+          color: #f87171 !important;
+          font-size: 12px !important;
+        }
+        .neox-login .ant-btn-primary {
+          background: ${N.accent} !important;
+          border-color: ${N.accent} !important;
+          color: #0a0c0f !important;
+          font-weight: 600 !important;
+          letter-spacing: 0.03em !important;
+          border-radius: 6px !important;
+        }
+        .neox-login .ant-btn-primary:hover:not(:disabled) {
+          background: #56e8a8 !important;
+          border-color: #56e8a8 !important;
+        }
+        .neox-login .ant-btn-primary:disabled {
+          background: ${N.accentDim} !important;
+          border-color: ${N.accentDim} !important;
+          color: ${N.faint} !important;
+          opacity: 0.6 !important;
+        }
+        .neox-login .ant-btn-default {
+          background: ${N.panelHi} !important;
+          border-color: ${N.hairline} !important;
+          color: ${N.muted} !important;
+          border-radius: 6px !important;
+        }
+        .neox-login .ant-btn-default:hover:not(:disabled) {
+          border-color: ${N.accent} !important;
+          color: ${N.accent} !important;
+        }
+        .neox-login .ant-btn-default:disabled {
+          background: ${N.panelHi} !important;
+          border-color: ${N.hairline} !important;
+          color: ${N.faint} !important;
+          opacity: 0.5 !important;
+        }
+        .neox-login .ant-select-selector {
+          background: ${N.panelHi} !important;
+          border-color: ${N.hairline} !important;
+          color: ${N.ink} !important;
+          border-radius: 6px !important;
+        }
+        .neox-login .ant-select-selection-placeholder {
+          color: ${N.faint} !important;
+        }
+        .neox-login .ant-select-arrow {
+          color: ${N.faint} !important;
+        }
+        .neox-login .ant-alert {
+          background: ${N.panelHi} !important;
+          border-color: ${N.hairline} !important;
+          border-radius: 6px !important;
+        }
+        .neox-login .ant-alert-message,
+        .neox-login .ant-alert-description {
+          color: ${N.muted} !important;
+        }
+        .neox-login .ant-alert-error {
+          border-color: #dc2626 !important;
+        }
+        .neox-login .ant-alert-error .ant-alert-message {
+          color: #f87171 !important;
+        }
+        .neox-login .ant-form-item {
+          margin-bottom: 18px !important;
+        }
+      `}</style>
+      <div
+        className="neox-login"
+        style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: N.canvas, ...gridBg }}
+      >
+        <div style={{ background: N.panel, border: `1px solid ${N.hairline}`, borderRadius: 12, padding: "40px 44px", width: "100%", maxWidth: 440, boxShadow: "0 24px 48px rgba(0,0,0,0.5)" }}>
+
+          {/* NeoX branding */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, marginBottom: 36 }}>
+            <NeoXLogo size={48} />
+            <div style={{ textAlign: "center" }}>
+              <div style={{ color: N.ink, fontSize: 18, fontWeight: 600, letterSpacing: "-0.01em" }}>NeoX LLM Gateway</div>
+              <div style={{ color: N.faint, fontSize: 13, marginTop: 4 }}>Sign in to manage your inference stack</div>
+            </div>
           </div>
 
-          <div className="text-center">
-            <Title level={3}>Login</Title>
-            <Text type="secondary">Access your LiteLLM Admin UI.</Text>
-          </div>
-
-          {!uiConfig?.hide_default_credentials_hint && (
-            <Alert
-              message="Default Credentials"
-              description={
-                <>
-                  <Paragraph className="text-sm">
-                    By default, Username is <code className="bg-gray-100 px-1 py-0.5 rounded-sm text-xs">admin</code>{" "}
-                    and Password is your set LiteLLM Proxy
-                    <code className="bg-gray-100 px-1 py-0.5 rounded-sm text-xs">MASTER_KEY</code>.
-                  </Paragraph>
-                  <Paragraph className="text-sm">
-                    Need to set UI credentials or SSO?{" "}
-                    <a href="https://docs.litellm.ai/docs/proxy/ui" target="_blank" rel="noopener noreferrer">
-                      Check the documentation
-                    </a>
-                    .
-                  </Paragraph>
-                </>
-              }
-              type="info"
-              icon={<InfoCircleOutlined />}
-              showIcon
-            />
-          )}
-
-          {error && <Alert message={error} type="error" showIcon />}
+          {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 20 }} />}
 
           <Form onFinish={handleSubmit} layout="vertical" requiredMark={false}>
             {uiConfig?.is_control_plane && workers.length > 0 && (
-              <Form.Item label="Worker" style={{ marginBottom: 16 }}>
+              <Form.Item label="Worker" style={{ marginBottom: 18 }}>
                 <Select
                   value={selectedWorkerId || undefined}
                   onChange={(value) => setSelectedWorkerId(value)}
                   placeholder="Choose a worker to connect to"
                   size="large"
-                  suffixIcon={<CloudServerOutlined />}
+                  suffixIcon={<CloudServerOutlined style={{ color: N.faint }} />}
                   options={workers.map((w) => ({
                     label: w.name,
                     value: w.worker_id,
@@ -244,7 +367,6 @@ function LoginPageContent() {
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={isLoginLoading}
                 size="large"
-                className="rounded-md border-gray-300"
               />
             </Form.Item>
 
@@ -252,6 +374,7 @@ function LoginPageContent() {
               label="Password"
               name="password"
               rules={[{ required: true, message: "Please enter your password" }]}
+              style={{ marginBottom: 28 }}
             >
               <Input.Password
                 placeholder="Enter your password"
@@ -263,7 +386,7 @@ function LoginPageContent() {
               />
             </Form.Item>
 
-            <Form.Item>
+            <Form.Item style={{ marginBottom: 10 }}>
               <Button
                 type="primary"
                 htmlType="submit"
@@ -272,14 +395,14 @@ function LoginPageContent() {
                 block
                 size="large"
               >
-                {isLoginLoading ? "Logging in..." : "Login"}
+                {isLoginLoading ? "Signing in…" : "Sign in"}
               </Button>
             </Form.Item>
-            <Form.Item>
+            <Form.Item style={{ marginBottom: 0 }}>
               {!uiConfig?.sso_configured ? (
-                <Popover content="Please configure SSO to log in with SSO." trigger="hover">
+                <Popover content={<span style={{ color: N.muted }}>SSO is not configured.</span>} trigger="hover">
                   <Button disabled block size="large">
-                    Login with SSO
+                    Sign in with SSO
                   </Button>
                 </Popover>
               ) : (
@@ -288,12 +411,9 @@ function LoginPageContent() {
                   onClick={() => {
                     const selectedWorker = workers.find((w) => w.worker_id === selectedWorkerId);
                     if (selectedWorker) {
-                      // Store worker selection so useWorker hook restores it after redirect
                       localStorage.setItem("litellm_selected_worker_id", selectedWorkerId!);
                       switchToWorkerUrl(selectedWorker.url);
                     }
-                    // SSO on the worker (or this instance if no worker), always
-                    // include return_to so the callback redirects back here
                     const ssoBase = selectedWorker?.url ?? getProxyBaseUrl();
                     const returnTo = encodeURIComponent(window.location.origin + "/ui/login");
                     router.push(`${ssoBase}/sso/key/generate?return_to=${returnTo}`);
@@ -301,28 +421,26 @@ function LoginPageContent() {
                   block
                   size="large"
                 >
-                  Login with SSO
+                  Sign in with SSO
                 </Button>
               )}
             </Form.Item>
           </Form>
-        </Space>
-        {uiConfig?.sso_configured && (
-          <Alert
-            type="info"
-            showIcon
-            closable
-            message={
-              <Text>
-                Single Sign-On (SSO) is enabled. LiteLLM no longer automatically redirects to the SSO login flow upon
-                loading this page. To re-enable auto-redirect-to-SSO, set{" "}
-                <Text code>AUTO_REDIRECT_UI_LOGIN_TO_SSO=true</Text> in your environment configuration.
-              </Text>
-            }
-          />
-        )}
-      </Card>
-    </div>
+
+          {uiConfig?.sso_configured && (
+            <div style={{ marginTop: 20, padding: "12px 14px", background: N.panelHi, border: `1px solid ${N.hairline}`, borderRadius: 6 }}>
+              <Typography.Text style={{ color: N.faint, fontSize: 12 }}>
+                SSO is enabled. Set{" "}
+                <code style={{ background: N.canvas, padding: "1px 5px", borderRadius: 3, color: N.muted }}>
+                  AUTO_REDIRECT_UI_LOGIN_TO_SSO=true
+                </code>{" "}
+                to auto-redirect.
+              </Typography.Text>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 

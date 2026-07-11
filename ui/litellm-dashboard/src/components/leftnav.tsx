@@ -621,7 +621,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const selectedMenuKey = findMenuItemKey(defaultSelectedKey);
 
   return (
-    <Layout>
+    <Layout style={{ background: "transparent" }}>
       <Sider
         theme="light"
         width={220}
@@ -632,6 +632,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         style={{
           transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           position: "relative",
+          background: "#12161b",
+          borderRight: "1px solid #232a32",
         }}
       >
         <ConfigProvider
@@ -647,6 +649,16 @@ const Sidebar: React.FC<SidebarProps> = ({
                 subMenuItemBorderRadius: 6,
                 groupTitleFontSize: 10,
                 groupTitleLineHeight: 1.5,
+                itemBg: "#12161b",
+                itemColor: "#8b98a5",
+                itemHoverColor: "#e6edf3",
+                itemHoverBg: "#171c23",
+                itemSelectedColor: "#3ddc97",
+                itemSelectedBg: "#1f6f5230",
+                groupTitleColor: "#5b6670",
+                subMenuItemBg: "#12161b",
+                popupBg: "#12161b",
+                colorBgContainer: "#12161b",
               },
             },
           }}

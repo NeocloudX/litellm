@@ -13,6 +13,16 @@ function generateTitle(firstUserMessage: string): string {
   return trimmed.slice(0, TITLE_MAX_LENGTH) + "…";
 }
 
+function generateUUID(): string {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+  });
+}
+
 function storageKeyFor(userId: string): string {
   return `${STORAGE_KEY_PREFIX}:${encodeURIComponent(userId)}`;
 }
@@ -108,7 +118,7 @@ export function useChatHistory(
   }, [conversations, userId, storageUnavailable]);
 
   const createConversation = useCallback((model: string): string => {
-    const id = crypto.randomUUID();
+    const id = generateUUID();
     const now = Date.now();
     const newConversation: Conversation = {
       id,
@@ -127,7 +137,7 @@ export function useChatHistory(
   const appendMessage = useCallback((conversationId: string, message: Omit<ChatMessage, "id" | "timestamp">) => {
     const newMessage: ChatMessage = {
       ...message,
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       timestamp: Date.now(),
     };
 

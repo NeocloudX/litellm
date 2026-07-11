@@ -113,29 +113,63 @@ function UserBubble({ message, onEdit, isStreaming }: UserBubbleProps) {
 
   if (editing) {
     return (
-      <div className="flex flex-col items-end">
-        <div className="w-[72%] bg-background border-2 border-primary rounded-xl overflow-hidden shadow-[0_0_0_3px_rgba(var(--primary)/0.1)]">
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+        <div style={{
+          width: "72%",
+          background: "#171c23",
+          border: "1.5px solid #3ddc97",
+          borderRadius: 12,
+          overflow: "hidden",
+          boxShadow: "0 0 0 3px rgba(61,220,151,0.1)",
+        }}>
           <textarea
             ref={textareaRef}
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full px-3.5 py-2.5 border-none outline-none resize-none text-sm leading-relaxed text-foreground font-[inherit] bg-transparent box-border min-h-[40px]"
+            style={{
+              width: "100%",
+              padding: "10px 14px",
+              border: "none",
+              outline: "none",
+              resize: "none",
+              fontSize: 14,
+              lineHeight: "1.6",
+              color: "#e6edf3",
+              fontFamily: "inherit",
+              background: "transparent",
+              boxSizing: "border-box",
+              minHeight: 40,
+            }}
           />
-          <div className="flex justify-end gap-2 px-2.5 py-1.5 border-t">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setEditValue(message.content);
-                setEditing(false);
+          <div style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: 8,
+            padding: "6px 10px 8px",
+            borderTop: "1px solid #232a32",
+          }}>
+            <button
+              onClick={() => { setEditValue(message.content); setEditing(false); }}
+              style={{
+                padding: "4px 12px", borderRadius: 6, border: "1px solid #232a32",
+                background: "#12161b", color: "#e6edf3", fontSize: 13, cursor: "pointer",
               }}
             >
               Cancel
-            </Button>
-            <Button size="sm" onClick={handleSave} disabled={!editValue.trim()}>
-              Save & Send
-            </Button>
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={!editValue.trim()}
+              style={{
+                padding: "4px 12px", borderRadius: 6, border: "none",
+                background: editValue.trim() ? "#3ddc97" : "#232a32",
+                color: editValue.trim() ? "#0a0c0f" : "#5b6670",
+                fontSize: 13, fontWeight: 500, cursor: editValue.trim() ? "pointer" : "not-allowed",
+              }}
+            >
+              Save &amp; Send
+            </button>
           </div>
         </div>
       </div>
@@ -150,32 +184,41 @@ function UserBubble({ message, onEdit, isStreaming }: UserBubbleProps) {
     >
       <div className="flex items-end gap-1.5 max-w-[72%]">
         {hovered && !isStreaming && onEdit && (
-          <TooltipProvider delayDuration={300}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon-xs"
-                  onClick={() => {
-                    setEditValue(message.content);
-                    setEditing(true);
-                  }}
-                  className="text-muted-foreground hover:text-foreground shrink-0"
-                >
-                  <Pencil className="size-3.5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Edit message</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip title="Edit message">
+            <button
+              onClick={() => { setEditValue(message.content); setEditing(true); }}
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                padding: "4px 6px", borderRadius: 5,
+                color: "#5b6670", fontSize: 13, flexShrink: 0,
+                display: "flex", alignItems: "center",
+                transition: "color 0.15s",
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#8b98a5"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#5b6670"; }}
+            >
+              <EditOutlined />
+            </button>
+          </Tooltip>
         )}
-        <div className="bg-muted rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words text-foreground">
+        <div
+          style={{
+            backgroundColor: "#171c23",
+            borderRadius: 16,
+            padding: "10px 14px",
+            fontSize: 14,
+            lineHeight: "1.6",
+            whiteSpace: "pre-wrap",
+            wordBreak: "break-word",
+            color: "#e6edf3",
+          }}
+        >
           {message.content}
         </div>
       </div>
-      <span className="text-[11px] text-muted-foreground mt-1">{formatTimestamp(message.timestamp)}</span>
+      <span style={{ fontSize: 11, color: "#5b6670", marginTop: 4 }}>
+        {formatTimestamp(message.timestamp)}
+      </span>
     </div>
   );
 }
@@ -228,7 +271,14 @@ function AssistantBubble({ message, isLastMessage, isStreaming, isTypingIndicato
           <ReasoningContent key={reasoningKey} reasoningContent={message.reasoningContent!} />
         ))}
 
-      <div className="text-sm leading-[1.7] text-foreground break-words">
+      <div
+        style={{
+          fontSize: 14,
+          lineHeight: "1.7",
+          color: "#e6edf3",
+          wordBreak: "break-word",
+        }}
+      >
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
@@ -237,7 +287,9 @@ function AssistantBubble({ message, isLastMessage, isStreaming, isTypingIndicato
         >
           {mainContent}
         </ReactMarkdown>
-        {stoppedSuffix && <span className="text-muted-foreground italic"> [stopped]</span>}
+        {stoppedSuffix && (
+          <span style={{ color: "#5b6670", fontStyle: "italic" }}> [stopped]</span>
+        )}
       </div>
 
       <CopyButton text={mainContent} />
@@ -264,24 +316,33 @@ function CopyButton({ text }: { text: string }) {
   };
 
   return (
-    <div className="flex items-center gap-1 mt-1.5">
-      <TooltipProvider delayDuration={300}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              onClick={handleCopy}
-              className={copied ? "text-emerald-600" : "text-muted-foreground hover:text-foreground"}
-            >
-              {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{copied ? "Copied!" : "Copy"}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+    <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 6 }}>
+      <Tooltip title={copied ? "Copied!" : "Copy"}>
+        <button
+          onClick={handleCopy}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: "4px 6px",
+            borderRadius: 5,
+            color: copied ? "#3ddc97" : "#5b6670",
+            fontSize: 13,
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            transition: "color 0.15s",
+          }}
+          onMouseEnter={(e) => {
+            if (!copied) (e.currentTarget as HTMLButtonElement).style.color = "#8b98a5";
+          }}
+          onMouseLeave={(e) => {
+            if (!copied) (e.currentTarget as HTMLButtonElement).style.color = "#5b6670";
+          }}
+        >
+          {copied ? <CheckOutlined /> : <CopyOutlined />}
+        </button>
+      </Tooltip>
     </div>
   );
 }
@@ -298,8 +359,21 @@ function ThinkingPlaceholder() {
           animation: thinking-pulse 1.4s ease-in-out infinite;
         }
       `}</style>
-      <div className="inline-flex items-center gap-1.5 px-2.5 mb-2 bg-muted/50 border rounded-lg text-xs text-muted-foreground">
-        <span className="chat-thinking-text py-1">Thinking...</span>
+      <div
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          padding: "4px 10px",
+          marginBottom: 8,
+          backgroundColor: "#171c23",
+          border: "1px solid #232a32",
+          borderRadius: 8,
+          fontSize: 12,
+          color: "#8b98a5",
+        }}
+      >
+        <span className="chat-thinking-text">Thinking...</span>
       </div>
     </>
   );
@@ -317,7 +391,7 @@ function TypingDots() {
           width: 7px;
           height: 7px;
           border-radius: 50%;
-          background-color: var(--color-muted-foreground);
+          background-color: #5b6670;
           animation: chat-typing-bounce 1.2s ease-in-out infinite;
         }
         .chat-dot:nth-child(2) { animation-delay: 0.2s; }
@@ -339,36 +413,91 @@ function ToolCard({ message }: ToolCardProps) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="max-w-[80%]">
-      <Collapsible open={open} onOpenChange={setOpen}>
-        <CollapsibleTrigger className="flex items-center gap-1.5 text-[13px] px-3 py-2 border rounded-lg bg-muted/50 hover:bg-muted transition-colors w-full text-left">
-          <Wrench className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="font-medium text-foreground">{message.toolName ?? "Tool call"}</span>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="border border-t-0 rounded-b-lg px-3 py-2 bg-muted/30">
+    <div style={{ maxWidth: "80%" }}>
+      <Collapse
+        size="small"
+        style={{
+          backgroundColor: "#171c23",
+          border: "1px solid #232a32",
+          borderRadius: 8,
+        }}
+      >
+        <Panel
+          header={
+            <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+              <ToolOutlined style={{ color: "#8b98a5" }} />
+              <span style={{ color: "#e6edf3", fontWeight: 500 }}>
+                {message.toolName ?? "Tool call"}
+              </span>
+            </span>
+          }
+          key="tool"
+        >
           {redactedArgs !== undefined && (
-            <div className={message.toolResult ? "mb-3" : ""}>
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+            <div style={{ marginBottom: message.toolResult ? 12 : 0 }}>
+              <div
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  color: "#5b6670",
+                  marginBottom: 4,
+                }}
+              >
                 Arguments
               </div>
-              <pre className="m-0 p-2 bg-muted rounded-md text-xs font-mono whitespace-pre-wrap break-words text-foreground">
+              <pre
+                style={{
+                  margin: 0,
+                  padding: "8px 10px",
+                  backgroundColor: "#0a0c0f",
+                  borderRadius: 6,
+                  fontSize: 12,
+                  fontFamily:
+                    'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                  color: "#e6edf3",
+                }}
+              >
                 {JSON.stringify(redactedArgs, null, 2)}
               </pre>
             </div>
           )}
           {message.toolResult && (
             <div>
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+              <div
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  color: "#5b6670",
+                  marginBottom: 4,
+                }}
+              >
                 Result
               </div>
-              <div className="text-[13px] text-foreground whitespace-pre-wrap break-words font-mono">
+              <div
+                style={{
+                  fontSize: 13,
+                  color: "#e6edf3",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                  fontFamily:
+                    'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+                }}
+              >
                 {message.toolResult}
               </div>
             </div>
           )}
-        </CollapsibleContent>
-      </Collapsible>
-      <div className="text-[11px] text-muted-foreground mt-1">{formatTimestamp(message.timestamp)}</div>
+        </Panel>
+      </Collapse>
+      <div style={{ fontSize: 11, color: "#5b6670", marginTop: 4 }}>
+        {formatTimestamp(message.timestamp)}
+      </div>
     </div>
   );
 }

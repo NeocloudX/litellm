@@ -7,8 +7,8 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { clearTokenCookies } from "@/utils/cookieUtils";
 import { clearStoredReturnUrl } from "@/utils/returnUrlUtils";
 import useProxySettings from "@/app/(dashboard)/hooks/proxySettings/useProxySettings";
-import { DownOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Tag } from "antd";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import { Button, Tag } from "antd";
 import Link from "next/link";
 import React from "react";
 import { BlogDropdown } from "./Navbar/BlogDropdown/BlogDropdown";
@@ -18,6 +18,16 @@ import { NotificationsBell } from "./Navbar/NotificationsBell/NotificationsBell"
 import UserDropdown from "./Navbar/UserDropdown/UserDropdown";
 import ViewSwitcher from "./Navbar/ViewSwitcher";
 import WorkerDropdown from "./Navbar/WorkerDropdown/WorkerDropdown";
+
+function NeoXMark({ size = 28 }: { size?: number }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width={size} height={size} style={{ flexShrink: 0 }}>
+      <rect width="32" height="32" rx="7" fill="#0a0c0f" />
+      <rect x="1" y="1" width="30" height="30" rx="6" fill="none" stroke="#3ddc97" strokeOpacity="0.3" />
+      <path d="M9.5 23V9h2.7l8.1 10.2V9H23v14h-2.7L12.2 12.8V23z" fill="#3ddc97" />
+    </svg>
+  );
+}
 
 interface NavbarProps {
   accessToken: string | null;
@@ -60,14 +70,34 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <nav className="sticky top-0 z-10 border-b border-gray-200 bg-white">
+    <>
+    <style>{`
+      .neox-nav-right .ant-btn-text,
+      .neox-nav-right .ant-btn-text:hover,
+      .neox-nav-right .ant-typography {
+        color: #8b98a5 !important;
+      }
+      .neox-nav-right .ant-btn-text:hover {
+        background: #171c23 !important;
+        color: #e6edf3 !important;
+      }
+      .neox-nav-right .anticon {
+        color: #8b98a5 !important;
+      }
+      .neox-nav-right .ant-dropdown-trigger:hover .anticon,
+      .neox-nav-right .ant-dropdown-trigger:hover .ant-typography {
+        color: #e6edf3 !important;
+      }
+    `}</style>
+    <nav style={{ background: "#12161b", borderBottom: "1px solid #232a32" }} className="sticky top-0 z-10">
       <div className="w-full">
         <div className="flex h-14 items-center px-4">
           <div className="flex shrink-0 items-center">
             {onToggleSidebar && (
               <button
                 onClick={onToggleSidebar}
-                className="mr-2 flex h-9 w-9 items-center justify-center rounded-md text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+                style={{ color: "#8b98a5" }}
+                className="flex items-center justify-center w-10 h-10 mr-2 rounded transition-colors hover:opacity-80"
                 title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               >
                 <span className="text-lg">{sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}</span>
@@ -75,86 +105,54 @@ const Navbar: React.FC<NavbarProps> = ({
             )}
 
             <div className="flex items-center gap-2">
-              <Link href={baseUrl ? baseUrl : "/"} className="flex items-center">
-                <div className="relative">
-                  <div className="flex h-10 max-w-48 items-center justify-center overflow-hidden">
-                    <img
-                      src={imageUrl}
-                      alt="LiteLLM Brand"
-                      className="h-auto max-h-full w-auto max-w-full object-contain"
-                    />
-                  </div>
-                </div>
+              <Link href={baseUrl ? baseUrl : "/"} className="flex items-center gap-2 no-underline">
+                <NeoXMark size={28} />
+                <span style={{ color: "#e6edf3", fontWeight: 600, fontSize: 15, letterSpacing: "-0.01em" }}>
+                  NeoX Gateway
+                </span>
               </Link>
               {version && (
-                <div className="relative">
-                  {!disableBouncingIcon && (
-                    <span
-                      className="absolute -left-2 -top-1 animate-bounce text-lg"
-                      style={{ animationDuration: "2s" }}
-                      title="Thanks for using LiteLLM!"
-                    >
-                      🌑
-                    </span>
-                  )}
-                  <Tag className="relative z-10 cursor-pointer text-xs font-medium">
-                    <a
-                      href="https://docs.litellm.ai/release_notes"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="shrink-0"
-                    >
-                      v{version}
-                    </a>
-                  </Tag>
-                </div>
+                <Tag style={{ background: "#171c23", border: "1px solid #232a32", color: "#5b6670", fontSize: 11 }}>
+                  <a
+                    href="https://docs.litellm.ai/release_notes"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "inherit" }}
+                  >
+                    v{version}
+                  </a>
+                </Tag>
               )}
             </div>
           </div>
 
           {!isPublicPage && (
-            <div className="ml-4 flex shrink-0 items-center border-l border-gray-200 pl-4">
+            <div className="ml-4 flex shrink-0 items-center border-l border-gray-800 pl-4">
               <ViewSwitcher />
             </div>
           )}
 
-          <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-4">
+          <div className="neox-nav-right flex items-center space-x-4 ml-auto">
             {showWorkerSwitch && (
               <div className="flex shrink-0 items-center">
                 <WorkerDropdown onWorkerSwitch={handleWorkerSwitch} />
               </div>
             )}
-
-            <nav
-              aria-label="Product documentation"
-              className={`flex min-w-0 items-center gap-2 ${showWorkerSwitch ? "border-l border-gray-200 pl-4" : ""}`}
+            {!hideCommunityLinks && <CommunityEngagementButtons />}
+            <Button
+              type="text"
+              href="https://docs.litellm.ai/docs/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#8b98a5" }}
             >
-              <a
-                href="https://docs.litellm.ai/docs/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={NAV_PRODUCT_LINK_CLASS}
-              >
-                Docs
-                {/* Layout parity with Blog chevron — intentional single-level link */}
-                <DownOutlined className="pointer-events-none text-[10px] opacity-0" aria-hidden />
-              </a>
-              <BlogDropdown />
-            </nav>
-
-            {!hideCommunityLinks && (
-              <div className="flex shrink-0 items-center border-l border-gray-200 pl-4">
-                <CommunityEngagementButtons />
-              </div>
-            )}
-
+              Docs
+            </Button>
+            <BlogDropdown />
             {!isPublicPage && (
-              <div className="flex shrink-0 items-center border-l border-gray-200 pl-4">
-                <div className="flex items-center gap-0.5 rounded-lg bg-gray-50 px-1 py-0 transition-colors hover:bg-gray-100">
-                  <NotificationsBell />
-                  <span className="mx-0.5 h-6 w-px shrink-0 bg-gray-200" aria-hidden />
-                  <UserDropdown onLogout={handleLogout} />
-                </div>
+              <div className="flex items-center gap-0.5">
+                <NotificationsBell />
+                <UserDropdown onLogout={handleLogout} />
               </div>
             )}
           </div>
@@ -162,6 +160,7 @@ const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
     </nav>
+    </>
   );
 };
 

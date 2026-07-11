@@ -9,9 +9,9 @@ import ReactQueryProvider from "@/contexts/ReactQueryProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "LiteLLM Dashboard",
-  description: "LiteLLM Proxy Admin UI",
-  icons: { icon: "/get_favicon" },
+  title: "NeoX Gateway",
+  description: "NeoX AI Gateway",
+  icons: { icon: [{ url: "/ui/neox-favicon.svg", type: "image/svg+xml" }] },
 };
 
 export default function RootLayout({
