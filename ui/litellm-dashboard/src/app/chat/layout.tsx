@@ -1,29 +1,18 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { useUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUISettings";
 import Navbar from "@/components/navbar";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ChatShellProvider } from "@/contexts/ChatShellContext";
 import ChatShell from "@/components/chat/ChatShell";
-import { migratedHref } from "@/utils/migratedPages";
 
 // ChatShellProvider uses useSearchParams(), which requires a Suspense boundary for static export.
+// NeoX: chat is always enabled — skip the enable_chat_ui gate.
 function ChatLayoutContent({ children }: { children: React.ReactNode }) {
   const { accessToken, userRole, userId, userEmail, premiumUser } = useAuthorized();
-  const { data: uiSettings, isLoading: isUISettingsLoading } = useUISettings();
-  const router = useRouter();
 
-  const chatEnabled = Boolean(uiSettings?.values?.enable_chat_ui);
-  const blocked = !isUISettingsLoading && !chatEnabled;
-
-  useEffect(() => {
-    if (blocked) router.replace(migratedHref(""));
-  }, [blocked, router]);
-
-  if (isUISettingsLoading || blocked) return null;
+  if (!accessToken) return null;
 
   return (
     <ThemeProvider accessToken={accessToken}>
