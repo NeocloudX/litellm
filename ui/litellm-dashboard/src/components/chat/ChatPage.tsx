@@ -901,7 +901,6 @@ const ChatPage: React.FC<ChatPageProps> = ({ accessToken, userRole, userId, user
               activeConversationId={activeConversationId}
               onSelect={(id) => router.push(getChatUrl(uiRoot, id))}
               onDelete={deleteConversation}
-              onNewChat={() => router.push(getChatUrl(uiRoot))}
               onRename={renameConversation}
             />
           </div>
