@@ -1,17 +1,17 @@
 "use client";
 
-import { Wrench, Copy, Check, Pencil } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Button } from "@/components/ui/button";
 import React, { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { Tooltip, Collapse } from "antd";
+import { EditOutlined, CheckOutlined, CopyOutlined, ToolOutlined } from "@ant-design/icons";
 import ReasoningContent from "@/components/chat_ui/ReasoningContent";
 import MCPEventsDisplay from "@/components/chat_ui/MCPEventsDisplay";
 import { ChatMessage } from "./types";
+
+const { Panel } = Collapse;
 
 const REDACTED_KEY_PATTERNS = /token|key|secret|password|auth/i;
 
