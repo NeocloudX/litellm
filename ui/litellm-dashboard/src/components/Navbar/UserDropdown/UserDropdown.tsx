@@ -232,7 +232,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout }) => {
     >
       <Button
         type="text"
-        className="flex! max-w-[min(200px,34vw)] items-center gap-2 rounded-md! py-0.5! pl-1! pr-2! transition-colors hover:bg-gray-100!"
+        className="flex! max-w-[min(200px,34vw)] items-center gap-2 rounded-md! py-0.5! pl-1! pr-2! transition-colors hover:bg-white/10!"
         aria-label={`Account menu — ${userRole ?? "Unknown role"} — signed in as ${userEmail || userId || "unknown"}`}
         aria-haspopup="menu"
       >
@@ -243,10 +243,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout }) => {
         >
           {initials}
         </span>
-        <span className="hidden min-w-0 truncate text-left text-sm font-medium leading-none text-gray-900 md:inline">
+        <span className="hidden min-w-0 truncate text-left text-sm font-medium leading-none text-[#8b98a5] md:inline">
           {displayName}
         </span>
-        <DownOutlined className="hidden shrink-0 text-[10px] text-gray-400 md:inline" aria-hidden />
+        <DownOutlined className="hidden shrink-0 text-[10px] text-[#8b98a5] md:inline" aria-hidden />
       </Button>
     </Dropdown>
   );
