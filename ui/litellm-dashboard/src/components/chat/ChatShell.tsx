@@ -58,18 +58,7 @@ const ChatShell: React.FC<ChatShellProps> = ({ children }) => {
 
   return (
     <div className="flex h-full w-full flex-col bg-background overflow-hidden">
-      <div className="shrink-0 border-b border-amber-200 bg-amber-50 px-4 py-1.5 text-center text-[13px] text-amber-800">
-        This is a pre-v0 feature. Do not use in production, it may change unexpectedly. Please share feedback{" "}
-        <a
-          href="https://github.com/BerriAI/litellm/discussions/32085"
-          target="_blank"
-          rel="noreferrer"
-          className="font-medium underline"
-        >
-          here
-        </a>
-        .
-      </div>
+
       <div className="flex flex-1 min-h-0 overflow-hidden">
         <div className="shrink-0 bg-sidebar border-sidebar-border border-r flex flex-col overflow-hidden w-[260px]">
           <div className="px-2 pt-3 pb-1 shrink-0">
