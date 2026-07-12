@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Pencil, Trash2, Search, MessageSquare } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,8 +17,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Typography, Modal, Avatar, Input as AntInput } from "antd";
+import { SearchOutlined, MessageOutlined, UserOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { Conversation } from "./types";
+
+const { Text } = Typography;
 
 interface Props {
   conversations: Conversation[];
@@ -245,7 +248,6 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, conversations, onSelect
   };
 
   return (
-  return (
     <Modal
       open={open}
       onCancel={onClose}
@@ -254,7 +256,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, conversations, onSelect
       width={480}
       styles={{ body: { padding: "16px 16px 8px" } }}
     >
-      <Input
+      <AntInput
         autoFocus
         prefix={<SearchOutlined style={{ color: "#5b6670" }} />}
         placeholder="Search conversations…"
@@ -373,7 +375,7 @@ const ConversationList: React.FC<Props> = ({ conversations, activeConversationId
               </div>
             ))
           )}
-        </div>
+        </ScrollArea>
 
         {/* Bottom: user avatar placeholder */}
         <div
