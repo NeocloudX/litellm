@@ -275,7 +275,7 @@ function AssistantBubble({ message, isLastMessage, isStreaming, isTypingIndicato
         style={{
           fontSize: 14,
           lineHeight: "1.7",
-          color: "#e6edf3",
+          color: "var(--foreground)",
           wordBreak: "break-word",
         }}
       >
