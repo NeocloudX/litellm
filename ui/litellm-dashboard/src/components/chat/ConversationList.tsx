@@ -156,7 +156,7 @@ const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSel
             style={{
               flex: 1,
               fontSize: 13,
-              color: isActive ? "#3ddc97" : "#e6edf3",
+              color: isActive ? "#3ddc97" : "var(--sidebar-foreground)",
               overflow: "hidden",
               whiteSpace: "nowrap",
               textOverflow: "ellipsis",
